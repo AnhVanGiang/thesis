@@ -43,3 +43,4 @@ h_u^{(k)} = \text{AGGREGATE}^{(k)}(\{h_v^{(k-1)}: v \in \mathcal{N}(u) \cup \{u\
 $$
 
 #### Generalized Neighborhood Aggregation
+Oversmoothing: after several iterations of GNN message passing, the representation for all nodes in the graph can become very similar to one another. It makes it impossible to build deeper GNN models. 
