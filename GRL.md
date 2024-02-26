@@ -43,4 +43,30 @@ h_u^{(k)} = \text{AGGREGATE}^{(k)}(\{h_v^{(k-1)}: v \in \mathcal{N}(u) \cup \{u\
 $$
 
 #### Generalized Neighborhood Aggregation
-Oversmoothing: after several iterations of GNN message passing, the representation for all nodes in the graph can become very similar to one another. It makes it impossible to build deeper GNN models. 
+##### Neighborhood Normalization
+The basic neighborhood aggregation operation of summing the embeddings can be unstable and sensitive to node degrees. For example, if node $u$ has 100x as many neighbors as node $u'$ then we can expect that 
+$$
+\left\lVert \sum_{v \in \mathcal{N}(u)} h_v \right\rVert \gg \left\lVert \sum_{v' \in \mathcal{N}(u')} h_v' \right\rVert.
+$$
+since $|\mathcal{N}(u)| \gg |\mathcal{N}(u')|$. This can lead to numerical instability and slow convergence. To address this, we can normalize the aggregated messages by the degrees of the nodes:
+$$
+m_{\mathcal{N}(u)} = \frac{1}{|\mathcal{N}(u)|} \sum_{v \in \mathcal{N}(u)} h_v.
+$$
+This is the same as averaging the embeddings. One other successful normalization factor is the symmetric normalization:
+$$
+m_{\mathcal{N}(u)} = \frac{\sum_{v \in \mathcal{N}(u)} h_v}{\sqrt{|\mathcal{N}(u)||\mathcal{N}(v)|}}.
+$$
+This method is used in the Graph Convolutional Network (GCN).
+It is important to note that normalization can lead to loss of information. For example, after normalization, it can be hard (or even impossible) to use the learned embeddings to distinguish between nodes of different degrees, and various other structural graph features can be obscured by normalization. Usually, normalization is most helpful in tasks where node feature information is far more useful than structural information, or where there is a very wide range of node degrees that can lead to instabilities during optimization.
+
+##### Set Aggregators
+The AGGREGATE function can be more complex than simple sum or average. Since the input is a set without any orderings, any aggregation function must be permutation invariant. 
+###### Set pooling
+One principled approach to define an aggregation function is based on the theory of permutation invariant neural networks. Any permutation invariant function that maps a set of embeddings to a single embedding can be approximated by the model
+$$
+m_{\mathcal{N}(u)} = \text{MLP}_\theta\left(\sum_{v \in \mathcal{N}(u)} \text{MLP}_\phi(h_v^{(k-1)})\right).
+$$
+This means that we can directly learn the aggregation function from the data by using MLPs. 
+
+##### Neighborhood Attention
+
