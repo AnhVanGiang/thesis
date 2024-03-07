@@ -70,3 +70,18 @@ This means that we can directly learn the aggregation function from the data by 
 
 ##### Neighborhood Attention
 
+
+
+### Theories
+A general convolution operation can be defined as 
+\[ (f \star g)(x) = \int_{\mathbb{R}^d} f(y)h(x - y)dy = F^{-1}(F(f(x)) \circ F(f(x)) ), \]
+where $F$ is the Fourier transform. We can view the discrete convolution $f \star h$ as a filtering operation of the series $f(x_i)$ by a filter $h$. 
+
+For a chain graph, let $A$ be an adjacency matrix and $L$ the normalized Laplacian matrix. Then 
+\[ (Af)[t] = f[(t+1) \mod n] \]
+and
+\[ (Lf)[t] = f[t] - f[(t + 1) \mod n].  \]
+Multiplying a signal by the Laplacian computes the difference between the signal at a node and its neighbors.
+
+For arbitrary graph with adjacency matrix $A$, we can represent convolutional filters as matrices of the form
+\[ Q_h = \sum_{i=0}^N \alpha_i A^i  \]
